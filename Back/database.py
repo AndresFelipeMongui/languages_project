@@ -1,10 +1,13 @@
 import os
 from pymongo import MongoClient
 
-##MONGO_URI = os.getenv("MONGO_URI") 
-MONGO_URI="mongodb+srv://Proyecto:12345@cluster0.paotbxz.mongodb.net/mathlite?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI") 
+##MONGO_URI="mongodb+srv://Proyecto:12345@cluster0.paotbxz.mongodb.net/mathlite?retryWrites=true&w=majority&appName=Cluster0"
+if not MONGO_URI:
+    raise ValueError("No se conecto a la variable de Mongo")
 
-client = MongoClient(MONGO_URI)
+
+client = MongoClient(MONGO_URI,serverSelectionTimeoutMS=5000)
 
 db = client["mathlite"]
 
