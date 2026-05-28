@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 
+
 import "./index.css";
+const API_URL=import.meta.env.VITE_API_URL;
 
 function App() {
 
@@ -22,7 +24,8 @@ print(x + 10);`
     try {
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/execute",
+        `${API_URL}/execute`,
+       // "http://127.0.0.1:8000/execute",
         {
           code: code
         }
@@ -55,7 +58,8 @@ print(x + 10);`
     try {
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/save",
+       // "http://127.0.0.1:8000/save",
+       `${API_URL}/execute`,
         {
           code: code
         }
@@ -76,7 +80,8 @@ print(x + 10);`
     try {
 
       const response = await axios.get(
-        "http://127.0.0.1:8000/history"
+        //"http://127.0.0.1:8000/history"
+        `${API_URL}/execute`
       );
 
       setHistory(response.data);
@@ -104,7 +109,8 @@ print(x + 10);`
     try {
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/execute",
+`${API_URL}/execute`,
+        //"http://127.0.0.1:8000/execute",
         {
           code: savedCode
         }

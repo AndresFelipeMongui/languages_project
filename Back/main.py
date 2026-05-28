@@ -8,9 +8,15 @@ from lexer import Lexer
 from parser import Parser
 from interpreter import Interpreter
 from database import executions
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins=[
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://languages-project-2.onrender.com/"
+]
 
 app.add_middleware(
     CORSMiddleware,
