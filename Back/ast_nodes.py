@@ -147,3 +147,29 @@ class WhileNode:
             "condition": self.condition.to_dict(),
             "body": self.body.to_dict()
         }
+##Nodo para la definicion de funciones
+
+class FuncDefNode:
+    def __init__(self, name, params, body):
+        self.name = name
+        self.params = params
+        self.body = body
+
+    def to_dict(self):
+        return {
+            "type": "FuncDefNode",
+            "name": self.name,
+            "params": self.params,
+            "body": self.body.to_dict()
+        }
+    
+##Para return de una funcion
+class ReturnNode:
+    def __init__(self, expr):
+        self.expr = expr
+
+    def to_dict(self):
+        return {
+            "type": "ReturnNode",
+            "expr": self.expr.to_dict()
+        }

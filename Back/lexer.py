@@ -22,6 +22,8 @@ class Lexer:
 
     KEYWORDS = {
         "let": "LET",
+        "def":"DEF",
+        "return":"RETURN",
         "if": "IF",
         "else": "ELSE",
         "while": "WHILE",
@@ -47,7 +49,8 @@ class Lexer:
         '%': 'MOD',
         '^': 'POW',
         '<': 'LESS',
-        '>': 'GREATER'
+        '>': 'GREATER',
+        ',':'COMMA'
     }
 
     DOUBLE = {
@@ -155,7 +158,7 @@ class Lexer:
                 self.advance()
                 self.skip_comment()
                 continue
-            
+
             if self.current.isspace():
                 self.skip_whitespace()
                 continue

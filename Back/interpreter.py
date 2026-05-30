@@ -1,12 +1,15 @@
 from ast_nodes import *
 
-
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+        
 class Interpreter:
 
     def __init__(self):
 
         self.variables = {}
-
+        self.functions = {}
         self.output = []
 
     def visit(self, node):
@@ -134,3 +137,11 @@ class Interpreter:
         while self.visit(node.condition):
             result = self.visit(node.body)
         return result
+##Para definicion de funciones
+    def visit_FuncDefNode(self, node):
+        self.functions[node.name] = node
+        return None
+##Para return
+    def visit_ReturnNode(self, node):
+        value = self.visit(node.expr)
+        raise ReturnException(value)

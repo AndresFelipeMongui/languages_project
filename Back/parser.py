@@ -42,6 +42,10 @@ class Parser:
            return self.if_statement()
         if self.current.type == "WHILE":
            return self.while_statement()
+        if self.current.type == "DEF":
+            return self.function_definition()
+        if self.current.type == "RETURN":
+            return self.return_statement() 
 
         raise Exception(
             f"Sentencia inesperada: {self.current.type}"
@@ -253,3 +257,51 @@ class Parser:
         body = self.block()
 
         return WhileNode(condition, body)
+    #Implementacion para la definicion de funciones
+
+    def function_definition(self):
+        self.advance()###Consume la palabra reservada DEF
+        if self.current.type != "ID":
+            raise Exception("Falta nombre de funcion")
+        func_name = self.current.value
+        self.advance()
+
+        if self.current.type != "LPAREN":
+            raise Exception("Se esperaba '(' después del nombre de la funcion")
+        self.advance()
+
+        params = []
+
+        if self.current and self.current.type != "RPAREN":
+            if self.current.type != "ID":
+                raise Exception("Alguno de los parametros no es un identificador valido")
+            params.append(self.current.value)
+            self.advance()
+
+            while self.current and self.current.type == "COMMA":
+                self.advance()
+                if self.current.type != "ID":
+                    raise Exception("Se esperaba identificador despues de ','")
+                params.append(self.current.value)
+                self.advance()
+
+        if self.current.type != "RPAREN":
+            raise Exception("Se esperaba ')' después de los parámetros")
+        self.advance()
+
+        if self.current.type != "LBRACE":
+            raise Exception("Se esperaba '{' para iniciar el cuerpo de la función")
+
+        body = self.block()
+        return FuncDefNode(func_name, params, body)
+    
+##Definir el return 
+    def return_statement(self):
+        self.advance()  # consume RETURN
+
+        expr = self.expr()
+
+        if self.current and self.current.type == "SEMICOLON":
+            self.advance()
+
+        return ReturnNode(expr)
