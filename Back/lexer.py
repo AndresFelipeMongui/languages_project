@@ -150,7 +150,12 @@ class Lexer:
         tokens = []
 
         while self.current:
-
+            if self.current == '-' and self.peek() == '-':
+                self.advance()
+                self.advance()
+                self.skip_comment()
+                continue
+            
             if self.current.isspace():
                 self.skip_whitespace()
                 continue
@@ -212,6 +217,10 @@ class Lexer:
         if next_pos < len(self.text):
             return self.text[next_pos]
         return None
+    def skip_comment(self):
+        while self.current and self.current != '\n':
+            self.advance()
+    ##Saltar commentarios
     def skip_comment(self):
         while self.current and self.current != '\n':
             self.advance()
