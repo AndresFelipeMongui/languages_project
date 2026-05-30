@@ -14,7 +14,11 @@ class Interpreter:
         self.functions = {}
         self.output = []
         self.builtins={
-            "sin":lambda x:math.sin(x)
+            "sin":lambda x:math.sin(x),
+            "cos": lambda x: math.cos(x),
+            "tan": lambda x: math.tan(x),
+            "sqrt": lambda x: math.sqrt(x),
+            "log": lambda x: math.log(x)
         }
 
     def visit(self, node):
