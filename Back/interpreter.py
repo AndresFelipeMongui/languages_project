@@ -70,6 +70,35 @@ class Interpreter:
 
         if node.op == "DIV":
             return left / right
+        if node.op == "EQUAL":
+            return left == right
+
+        if node.op == "NOTEQUAL":
+            return left != right
+
+        if node.op == "LESS":
+            return left < right
+
+        if node.op == "GREATER":
+            return left > right
+
+        if node.op == "LESSEQUAL":
+            return left <= right
+
+        if node.op == "GREATEREQUAL":
+            return left >= right
+
+        if node.op == "AND":
+            return bool(left) and bool(right)
+
+        if node.op == "OR":
+            return bool(left) or bool(right)
+
+        if node.op == "MOD":
+            return left % right
+
+        if node.op == "POW":
+            return left ** right
 
         raise Exception(
             f"Operador desconocido {node.op}"
@@ -82,3 +111,20 @@ class Interpreter:
         self.output.append(str(value))
 
         return value
+    def visit_UnaryOpNode(self, node):
+        value = self.visit(node.expr)
+
+        if node.op == "NOT":
+            return not bool(value)
+
+        if node.op == "MINUS":
+            return -value
+
+        raise Exception(f"Operador unario desconocido {node.op}")
+    def visit_IfNode(self, node):
+        condition_value = self.visit(node.condition)
+
+        if condition_value:
+            return self.visit(node.then_block)
+        elif node.else_block:
+            return self.visit(node.else_block)

@@ -38,6 +38,8 @@ class Parser:
 
         if self.current.type == "PRINT":
             return self.print_statement()
+        if self.current.type == "IF":
+           return self.if_statement()
 
         raise Exception(
             f"Sentencia inesperada: {self.current.type}"
@@ -88,23 +90,55 @@ class Parser:
         return PrintNode(expr)
 
     def expr(self):
-
-        node = self.term()
-
-        while self.current and self.current.type in (
-            "PLUS",
-            "MINUS"
-        ):
-
+         return self.logical_or()
+    
+    def logical_or(self):
+        node = self.logical_and()
+        while self.current and self.current.type == "OR":
             op = self.current.type
-
             self.advance()
-
-            right = self.term()
-
+            right = self.logical_and()
             node = BinOpNode(node, op, right)
-
         return node
+
+    def logical_and(self):
+        node = self.equality()
+        while self.current and self.current.type == "AND":
+            op = self.current.type
+            self.advance()
+            right = self.equality()
+            node = BinOpNode(node, op, right)
+        return node
+
+    def equality(self):
+        node = self.comparison()
+        while self.current and self.current.type in ("EQUAL", "NOTEQUAL"):
+            op = self.current.type
+            self.advance()
+            right = self.comparison()
+            node = BinOpNode(node, op, right)
+        return node
+
+    def comparison(self):
+        node = self.arith_expr()
+        while self.current and self.current.type in (
+            "LESS", "GREATER", "LESSEQUAL", "GREATEREQUAL"
+        ):
+            op = self.current.type
+            self.advance()
+            right = self.arith_expr()
+            node = BinOpNode(node, op, right)
+        return node
+    
+    def arith_expr(self):
+        node = self.term()
+        while self.current and self.current.type in ("PLUS", "MINUS"):
+            op = self.current.type
+            self.advance()
+            right = self.term()
+            node = BinOpNode(node, op, right)
+        return node
+####################################333
 
     def term(self):
 
@@ -148,6 +182,10 @@ class Parser:
         if token.type == "ID":
             self.advance()
             return VariableNode(token.value)
+        if token.type == "NOT":
+            self.advance()
+            expr = self.factor()
+            return UnaryOpNode("NOT", expr)
 
         if token.type == "LPAREN":
 
@@ -165,3 +203,39 @@ class Parser:
         raise Exception(
             f"Factor inesperado: {token.type}"
         )
+    
+    def if_statement(self):
+        self.advance()  # consume IF
+
+        condition = self.expr()
+
+        if self.current.type != "LBRACE":
+          raise Exception("Se esperaba '{' después de la condición del if")
+
+        then_block = self.block()
+
+        else_block = None
+        if self.current and self.current.type == "ELSE":
+            self.advance()
+            if self.current.type != "LBRACE":
+                raise Exception("Se esperaba '{' después de else")
+            else_block = self.block()
+
+        return IfNode(condition, then_block, else_block)
+    
+    def block(self):
+        if self.current.type != "LBRACE":
+            raise Exception("Se esperaba '{'")
+
+        self.advance()
+
+        statements = []
+        while self.current and self.current.type != "RBRACE":
+          statements.append(self.statement())
+
+        if not self.current:
+          raise Exception("Se esperaba '}'")
+
+        self.advance()
+
+        return BlockNode(statements)

@@ -27,7 +27,10 @@ class Lexer:
         "while": "WHILE",
         "print": "PRINT",
         "true": "BOOL",
-        "false": "BOOL"
+        "false": "BOOL",
+        "and": "AND",
+        "or": "OR",
+        "not": "NOT"
     }
 
     SINGLE = {
@@ -40,7 +43,18 @@ class Lexer:
         '{': 'LBRACE',
         '}': 'RBRACE',
         ';': 'SEMICOLON',
-        '=': 'ASSIGN'
+        '=': 'ASSIGN',
+        '%': 'MOD',
+        '^': 'POW',
+        '<': 'LESS',
+        '>': 'GREATER'
+    }
+
+    DOUBLE = {
+    "==": "EQUAL",
+    "!=": "NOTEQUAL",
+    "<=": "LESSEQUAL",
+    ">=": "GREATEREQUAL",
     }
 
     def __init__(self, text):
@@ -167,6 +181,23 @@ class Lexer:
                 self.advance()
 
                 continue
+            if self.current == '-' and self.peek() == '-':
+                self.advance()
+                self.advance()
+                self.skip_comment()
+                continue
+
+            two_char = (self.current or '') + (self.peek() or '')
+            if two_char in self.DOUBLE:
+                tokens.append(Token(
+                    self.DOUBLE[two_char],
+                    two_char,
+                    self.line,
+                    self.column
+                ))
+                self.advance()
+                self.advance()
+                continue
 
             self.errors.append(
                 f"Carácter ilegal '{self.current}' "
@@ -176,3 +207,11 @@ class Lexer:
             self.advance()
 
         return tokens
+    def peek(self):
+        next_pos = self.pos + 1
+        if next_pos < len(self.text):
+            return self.text[next_pos]
+        return None
+    def skip_comment(self):
+        while self.current and self.current != '\n':
+            self.advance()
