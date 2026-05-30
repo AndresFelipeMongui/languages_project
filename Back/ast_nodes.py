@@ -135,3 +135,15 @@ class UnaryOpNode:
             "operator": self.op,
             "expr": self.expr.to_dict()
         }
+#Nodeo para la sentencia while
+class WhileNode:
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = body
+
+    def to_dict(self):
+        return {
+            "type": "WhileNode",
+            "condition": self.condition.to_dict(),
+            "body": self.body.to_dict()
+        }

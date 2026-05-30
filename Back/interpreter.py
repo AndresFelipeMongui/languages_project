@@ -128,3 +128,9 @@ class Interpreter:
             return self.visit(node.then_block)
         elif node.else_block:
             return self.visit(node.else_block)
+###While
+    def visit_WhileNode(self, node):
+        result = None
+        while self.visit(node.condition):
+            result = self.visit(node.body)
+        return result

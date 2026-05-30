@@ -40,6 +40,8 @@ class Parser:
             return self.print_statement()
         if self.current.type == "IF":
            return self.if_statement()
+        if self.current.type == "WHILE":
+           return self.while_statement()
 
         raise Exception(
             f"Sentencia inesperada: {self.current.type}"
@@ -239,3 +241,15 @@ class Parser:
         self.advance()
 
         return BlockNode(statements)
+    
+    def while_statement(self):
+        self.advance()  # consume la sentencia WHILE
+
+        condition = self.expr()
+
+        if self.current.type != "LBRACE":
+            raise Exception("Se esperaba '{'")
+
+        body = self.block()
+
+        return WhileNode(condition, body)
