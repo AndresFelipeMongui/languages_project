@@ -1,3 +1,5 @@
+import math
+
 from ast_nodes import *
 
 class ReturnException(Exception):
@@ -11,6 +13,9 @@ class Interpreter:
         self.variables = {}
         self.functions = {}
         self.output = []
+        self.builtins={
+            "sin":lambda x:math.sin(x)
+        }
 
     def visit(self, node):
 
@@ -148,6 +153,22 @@ class Interpreter:
     
 ##Para la llamada de funciones
     def visit_FuncCallNode(self, node):
+        arg_values = [self.visit(arg) for arg in node.args]
+
+
+        if node.name in self.builtins:
+            if len(arg_values) != 1:
+                raise Exception(
+                f"La función integrada '{node.name}' esperaba 1 argumento"
+            )
+
+            try:
+                return self.builtins[node.name](*arg_values)
+            except Exception:
+                raise Exception(
+                f"Argumento inválido para la función '{node.name}'"
+            )
+
         if node.name not in self.functions:
             raise Exception(f"Función '{node.name}' no definida")
 
