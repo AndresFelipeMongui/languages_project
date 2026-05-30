@@ -187,6 +187,26 @@ class Parser:
 
         if token.type == "ID":
             self.advance()
+            if self.current and self.current.type == "LPAREN":
+                self.advance()  
+                args = []
+
+                if self.current and self.current.type != "RPAREN":
+                    args.append(self.expr())
+
+                    while self.current and self.current.type == "COMMA":
+                        self.advance()
+                        args.append(self.expr())
+
+                if not self.current or self.current.type != "RPAREN":
+                    raise Exception("Se esperaba ')' en llamada a función")
+
+                self.advance()
+                return FuncCallNode(token.value, args)
+
+
+
+
             return VariableNode(token.value)
         if token.type == "NOT":
             self.advance()

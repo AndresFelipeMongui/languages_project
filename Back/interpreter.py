@@ -3,7 +3,7 @@ from ast_nodes import *
 class ReturnException(Exception):
     def __init__(self, value):
         self.value = value
-        
+
 class Interpreter:
 
     def __init__(self):
@@ -145,3 +145,33 @@ class Interpreter:
     def visit_ReturnNode(self, node):
         value = self.visit(node.expr)
         raise ReturnException(value)
+    
+##Para la llamada de funciones
+    def visit_FuncCallNode(self, node):
+        if node.name not in self.functions:
+            raise Exception(f"Función '{node.name}' no definida")
+
+        func_def = self.functions[node.name]
+        if len(node.args) != len(func_def.params):
+            raise Exception(
+                f"La función '{node.name}' esperaba {len(func_def.params)} argumentos "
+        )
+
+        arg_values = [self.visit(arg) for arg in node.args]
+
+        previous_variables = self.variables.copy()
+
+        local_env = {}
+        for param_name, arg_value in zip(func_def.params, arg_values):
+            local_env[param_name] = arg_value
+
+        self.variables = local_env
+
+        try:
+            self.visit(func_def.body)
+        except ReturnException as ret:
+            self.variables = previous_variables
+            return ret.value
+
+        self.variables = previous_variables
+        return None

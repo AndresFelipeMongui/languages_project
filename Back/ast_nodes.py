@@ -173,3 +173,16 @@ class ReturnNode:
             "type": "ReturnNode",
             "expr": self.expr.to_dict()
         }
+    
+##Nodo para llamada a funcion
+class FuncCallNode:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+    def to_dict(self):
+        return {
+            "type": "FuncCallNode",
+            "name": self.name,
+            "args": [arg.to_dict() for arg in self.args]
+        }
